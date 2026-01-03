@@ -97,7 +97,9 @@ class UpliftRankingChallenge(Challenge):
         # 主要指标: AUUC (Qini)
         auuc = self.calculate_auuc(Y, T, predictions)
         auuc_perfect = self.calculate_auuc(Y, T, true_uplift)
-        auuc_random = self.calculate_auuc(Y, T, np.random.randn(len(predictions)))
+        # 使用固定 seed 确保可复现性
+        rng = np.random.RandomState(42)
+        auuc_random = self.calculate_auuc(Y, T, rng.randn(len(predictions)))
 
         # 归一化 AUUC
         normalized_auuc = (auuc - auuc_random) / (auuc_perfect - auuc_random) if auuc_perfect != auuc_random else 0

@@ -96,7 +96,18 @@ class CATEPredictionChallenge(Challenge):
 
         # 次要指标
         ate_bias = abs(predictions.mean() - true_cate.mean())
-        correlation = np.corrcoef(predictions, true_cate)[0, 1]
+
+        # 计算相关系数，处理零方差情况
+        pred_std = np.std(predictions)
+        true_std = np.std(true_cate)
+        if pred_std > 1e-10 and true_std > 1e-10:
+            correlation = np.corrcoef(predictions, true_cate)[0, 1]
+            # 处理可能的 NaN（如数值不稳定）
+            if np.isnan(correlation):
+                correlation = 0.0
+        else:
+            # 方差为零时相关系数无意义
+            correlation = 0.0
 
         # R² score
         ss_res = np.sum((true_cate - predictions) ** 2)

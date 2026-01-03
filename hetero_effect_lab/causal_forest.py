@@ -32,12 +32,15 @@ from .utils import (
 )
 
 
-class SimpleCausalForest:
+class SimpleTLearner:
     """
-    简化版因果森林 (基于 T-Learner)
+    简化版 T-Learner
 
     当 econml 不可用时的备选方案。
-    注意: 这不是真正的因果森林，只是一个简单的近似。
+    使用两个独立的随机森林分别拟合处理组和控制组。
+
+    注意: 这不是因果森林，只是基础的 T-Learner 实现。
+    真正的因果森林需要诚实分裂和自适应邻域等特性。
     """
 
     def __init__(self, n_estimators: int = 100, min_samples_leaf: int = 10, random_state: int = 42):
@@ -111,7 +114,7 @@ def compare_causal_forest_vs_tlearner(
     models = {}
 
     # T-Learner (作为基线)
-    t_learner = SimpleCausalForest(n_estimators=n_trees)
+    t_learner = SimpleTLearner(n_estimators=n_trees)
     t_learner.fit(X_train, T_train, Y_train)
     cate_tlearner = t_learner.predict(X_test)
     models['T-Learner'] = cate_tlearner
@@ -138,13 +141,10 @@ def compare_causal_forest_vs_tlearner(
     # 计算指标
     metrics_data = []
     for name, cate_pred in models.items():
-        # 需要构造 Y0_pred, Y1_pred 用于 PEHE
-        # 简化: 假设 CATE_pred = Y1_pred - Y0_pred, 且 Y0_pred 接近真实 Y0
-        Y0_pred = Y0_test  # 简化假设
-        Y1_pred = Y0_pred + cate_pred
-
-        pehe = compute_pehe(Y0_test, Y1_test, Y0_pred, Y1_pred)
-        ate_bias = compute_ate_bias(Y0_test, Y1_test, Y0_pred, Y1_pred)
+        # PEHE 的正确计算应该基于 CATE 而非潜在结果
+        # PEHE = sqrt(E[(tau_true - tau_pred)^2])
+        pehe = np.sqrt(np.mean((true_cate_test - cate_pred) ** 2))
+        ate_bias = abs(true_cate_test.mean() - cate_pred.mean())
         r2 = compute_r_squared(true_cate_test, cate_pred)
 
         metrics_data.append({

@@ -263,6 +263,7 @@ def visualize_uplift_split(
     )
 
     # 摘要
+    threshold_str = f"X1 <= {threshold:.4f}" if threshold is not None else "N/A"
     summary = f"""
 ### Uplift Tree 分裂分析
 
@@ -270,7 +271,7 @@ def visualize_uplift_split(
 
 | 指标 | 值 |
 |------|-----|
-| 最佳分裂点 | X1 <= {threshold:.4f} if threshold else 'N/A' |
+| 最佳分裂点 | {threshold_str} |
 | 分裂增益 | {gain:.6f} |
 | 整体 Uplift | {overall_uplift:.4f} |
 | 左子节点 Uplift | {left_uplift:.4f} |

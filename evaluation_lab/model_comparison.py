@@ -339,8 +339,8 @@ def perform_model_comparison(
                 else:
                     ate_boot, _ = estimator(Y_boot, T_boot, X_boot)
                 bootstrap_estimates[name].append(ate_boot)
-            except:
-                # 如果估计失败，跳过
+            except (ValueError, RuntimeError, np.linalg.LinAlgError, ZeroDivisionError):
+                # 如果估计失败 (如矩阵不可逆、样本不平衡等)，跳过
                 pass
 
     for name in model_names:

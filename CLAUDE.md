@@ -38,30 +38,56 @@ python app.py
 ├── app.py                    # Gradio 主应用
 ├── requirements.txt          # 依赖
 │
-├── foundation_lab/           # 基础概念 (已完成)
+├── foundation_lab/           # 基础概念
 │   ├── potential_outcomes.py # 潜在结果框架
 │   ├── causal_dag.py         # 因果图
 │   ├── confounding_bias.py   # 混淆偏差
 │   └── selection_bias.py     # 选择偏差
 │
-├── uplift_lab/               # Uplift 模型 (已完成)
+├── treatment_effect_lab/     # 处理效应估计
+│   ├── propensity_score.py   # 倾向得分匹配 (PSM)
+│   ├── ipw.py                # 逆概率加权 (IPW/AIPW)
+│   └── doubly_robust.py      # 双重稳健估计
+│
+├── uplift_lab/               # Uplift 模型
 │   ├── meta_learners.py      # S/T/X-Learner
 │   ├── uplift_tree.py        # Uplift 决策树
 │   ├── evaluation.py         # Qini/Uplift 曲线
 │   └── cate_comparison.py    # CATE 对比
 │
-├── deep_causal_lab/          # 深度因果 (已完成)
+├── hetero_effect_lab/        # 异质效应
+│   ├── causal_forest.py      # 因果森林
+│   ├── cate_visualization.py # CATE 可视化
+│   └── sensitivity.py        # 敏感性分析
+│
+├── deep_causal_lab/          # 深度因果模型
 │   ├── tarnet.py             # TARNet
 │   ├── dragonnet.py          # DragonNet
-│   └── cevae.py              # CEVAE (待完善)
+│   └── cevae.py              # CEVAE
 │
-├── treatment_effect_lab/     # 处理效应 (待开发)
-├── hetero_effect_lab/        # 异质效应 (待开发)
-├── application_lab/          # 应用场景 (待开发)
-├── evaluation_lab/           # 评估诊断 (待开发)
+├── application_lab/          # 应用场景
+│   ├── coupon_optimization.py# 智能发券
+│   ├── ab_enhancement.py     # A/B 测试增强
+│   └── user_targeting.py     # 用户定向
+│
+├── evaluation_lab/           # 评估诊断
+│   ├── balance_check.py      # 平衡性检查
+│   ├── overlap_check.py      # 重叠假设检验
+│   └── model_comparison.py   # 模型对比评估
+│
+├── challenges/               # 挑战系统
+│   ├── challenge_1_ate_estimation.py
+│   ├── challenge_2_cate_prediction.py
+│   ├── challenge_3_uplift_ranking.py
+│   └── leaderboard.py        # 排行榜
+│
+├── industry_cases/           # 行业案例
+│   ├── doordash_delivery.py  # DoorDash 配送优化
+│   ├── netflix_recommendation.py # Netflix 推荐
+│   └── uber_surge_pricing.py # Uber 动态定价
 │
 └── exercises/                # 练习代码
-    └── chapter1_foundation/  # 已完成
+    └── chapter1_foundation/
 ```
 
 ## 开发规范
@@ -99,27 +125,17 @@ def render():
 2. 函数文档说明
 3. 测试代码 (`if __name__ == "__main__"`)
 
-## 待开发功能
+## 已完成模块
 
-### TreatmentEffectLab
-- [ ] 倾向得分匹配 (PSM)
-- [ ] 逆概率加权 (IPW)
-- [ ] 双重稳健估计
-
-### HeteroEffectLab
-- [ ] Causal Forest
-- [ ] BART
-- [ ] 敏感性分析
-
-### ApplicationLab
-- [ ] 智能发券优化
-- [ ] A/B 测试增强
-- [ ] 用户分层干预
-
-### EvaluationLab
-- [ ] 平衡性检查
-- [ ] 重叠假设检验
-- [ ] 模型对比评估
+- [x] FoundationLab - 基础概念
+- [x] TreatmentEffectLab - 处理效应估计 (PSM, IPW, AIPW)
+- [x] UpliftLab - 增益模型
+- [x] HeteroEffectLab - 异质效应 (Causal Forest, 敏感性分析)
+- [x] DeepCausalLab - 深度因果模型
+- [x] ApplicationLab - 应用场景
+- [x] EvaluationLab - 评估诊断
+- [x] Challenges - 挑战系统
+- [x] IndustryCases - 行业案例 (DoorDash, Netflix, Uber)
 
 ## 技术栈
 

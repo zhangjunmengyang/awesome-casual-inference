@@ -246,14 +246,15 @@ def visualize_dragonnet(
         beta=beta
     )
 
-    # 预测
+    # 预测 - 确保 tensor 在正确的 device 上
     model.eval()
     with torch.no_grad():
-        X_tensor = torch.FloatTensor(X)
+        device = next(model.parameters()).device
+        X_tensor = torch.FloatTensor(X).to(device)
         Y0_pred, Y1_pred, propensity_pred, epsilon, phi = model(X_tensor)
-        Y0_pred = Y0_pred.numpy()
-        Y1_pred = Y1_pred.numpy()
-        propensity_pred = propensity_pred.numpy()
+        Y0_pred = Y0_pred.cpu().numpy()
+        Y1_pred = Y1_pred.cpu().numpy()
+        propensity_pred = propensity_pred.cpu().numpy()
 
     # 真实倾向得分 (近似)
     propensity_true = T.mean()  # 简化

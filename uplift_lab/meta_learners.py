@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from sklearn.base import clone
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import Ridge, LogisticRegression
 from sklearn.model_selection import cross_val_predict
@@ -46,7 +47,8 @@ class SLearner:
     def fit(self, X: np.ndarray, T: np.ndarray, Y: np.ndarray):
         """训练模型"""
         X_with_T = np.column_stack([X, T])
-        self.model = self.base_model
+        # 使用 clone 避免修改原始 base_model
+        self.model = clone(self.base_model)
         self.model.fit(X_with_T, Y)
         return self
 
@@ -116,11 +118,15 @@ class XLearner:
     """
 
     def __init__(self, outcome_model=None, effect_model=None, propensity_model=None):
-        self.model_0 = outcome_model or RandomForestRegressor(n_estimators=100, random_state=42)
-        self.model_1 = outcome_model or RandomForestRegressor(n_estimators=100, random_state=43)
-        self.tau_0 = effect_model or RandomForestRegressor(n_estimators=100, random_state=44)
-        self.tau_1 = effect_model or RandomForestRegressor(n_estimators=100, random_state=45)
-        self.propensity = propensity_model or LogisticRegression(random_state=42)
+        # 使用 clone 确保每个模型是独立实例，避免共享状态
+        default_outcome = RandomForestRegressor(n_estimators=100, random_state=42)
+        default_effect = RandomForestRegressor(n_estimators=100, random_state=44)
+
+        self.model_0 = clone(outcome_model) if outcome_model else clone(default_outcome)
+        self.model_1 = clone(outcome_model) if outcome_model else RandomForestRegressor(n_estimators=100, random_state=43)
+        self.tau_0 = clone(effect_model) if effect_model else clone(default_effect)
+        self.tau_1 = clone(effect_model) if effect_model else RandomForestRegressor(n_estimators=100, random_state=45)
+        self.propensity = clone(propensity_model) if propensity_model else LogisticRegression(random_state=42)
 
     def fit(self, X: np.ndarray, T: np.ndarray, Y: np.ndarray):
         """训练模型"""
@@ -184,15 +190,20 @@ class RLearner:
         # 估计 e(x) = P(T=1|X)
         e_hat = cross_val_predict(self.propensity_model, X, T, cv=5, method='predict_proba')[:, 1]
 
+        # 先 clip propensity scores 以避免极端值
+        e_hat = np.clip(e_hat, 0.01, 0.99)
+
         # 计算残差
         Y_residual = Y - m_hat
         T_residual = T - e_hat
 
-        # 避免除零
-        T_residual = np.clip(T_residual, -0.9, 0.9)
+        # 再次 clip 以确保数值稳定性
+        T_residual = np.clip(T_residual, -0.95, 0.95)
 
-        # 伪结果
-        pseudo_outcome = Y_residual / T_residual
+        # 伪结果 (避免除以接近零的值)
+        pseudo_outcome = Y_residual / np.where(np.abs(T_residual) < 0.05,
+                                                np.sign(T_residual) * 0.05,
+                                                T_residual)
 
         # 加权回归
         weights = T_residual ** 2

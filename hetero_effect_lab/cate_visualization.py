@@ -376,9 +376,8 @@ def visualize_cate_analysis(
     )
 
     # 计算整体指标
-    Y0_pred = Y0_true  # 简化
-    Y1_pred = Y0_pred + pred_cate
-    pehe = compute_pehe(Y0_true, Y1_true, Y0_pred, Y1_pred)
+    # PEHE 正确计算: sqrt(E[(tau_true - tau_pred)^2])
+    pehe = np.sqrt(np.mean((true_cate - pred_cate) ** 2))
     r2 = compute_r_squared(true_cate, pred_cate)
 
     # 子群体详细信息

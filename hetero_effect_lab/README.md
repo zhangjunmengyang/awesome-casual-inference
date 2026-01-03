@@ -51,7 +51,7 @@ hetero_effect_lab/
 
 **核心特性**:
 - 使用 econml 的 CausalForest (如果可用)
-- 备选: SimpleCausalForest (基于 T-Learner)
+- 备选: SimpleTLearner (基于 T-Learner 的简化实现)
 - 与 T-Learner 的性能对比
 - 特征重要性分析
 - 子群体 CATE 估计

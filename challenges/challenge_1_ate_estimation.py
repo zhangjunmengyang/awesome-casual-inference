@@ -180,7 +180,7 @@ class ATEEstimationChallenge(Challenge):
             # 为每个处理组样本找最近的控制组样本
             nn = NearestNeighbors(n_neighbors=1)
             nn.fit(X_control)
-            distances, indices = nn.fit(X_control).kneighbors(X_treated)
+            distances, indices = nn.kneighbors(X_treated)
 
             matched_control = Y_control[indices.flatten()]
             ate = (Y_treated - matched_control).mean()

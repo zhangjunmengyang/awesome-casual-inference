@@ -151,14 +151,34 @@ class PropensityScoreMatching:
 
         treated_idx, control_idx = self.matches
 
-        # 匹配后的平均差异
+        if len(treated_idx) == 0:
+            return 0.0, 0.0
+
         treated_outcomes = Y[treated_idx]
         control_outcomes = Y[control_idx]
 
-        ate = (treated_outcomes - control_outcomes).mean()
-
-        # 标准误
-        se = (treated_outcomes - control_outcomes).std() / np.sqrt(len(treated_idx))
+        # 当 n_neighbors > 1 时，需要按配对计算
+        # 每个处理组样本可能有多个控制组匹配
+        # 使用分组聚合的方式计算正确的 ATE
+        if self.n_neighbors == 1:
+            # 1:1 匹配，直接计算配对差异
+            pair_diffs = treated_outcomes - control_outcomes
+            ate = pair_diffs.mean()
+            # 配对 t-test 标准误
+            se = pair_diffs.std() / np.sqrt(len(pair_diffs))
+        else:
+            # n_neighbors > 1 时，每个处理样本有多个对照匹配
+            # 按处理样本分组，取对照组均值后再计算差异
+            unique_treated = np.unique(treated_idx)
+            pair_diffs = []
+            for t_idx in unique_treated:
+                mask = treated_idx == t_idx
+                y_t = Y[t_idx]
+                y_c_mean = Y[control_idx[mask]].mean()
+                pair_diffs.append(y_t - y_c_mean)
+            pair_diffs = np.array(pair_diffs)
+            ate = pair_diffs.mean()
+            se = pair_diffs.std() / np.sqrt(len(pair_diffs))
 
         return ate, se
 

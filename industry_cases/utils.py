@@ -377,7 +377,7 @@ def generate_uber_surge_pricing_data(
         20 * ((hour >= 7) & (hour <= 9)) +  # 早高峰司机多
         25 * ((hour >= 17) & (hour <= 19)) +  # 晚高峰司机多
         -10 * (weather == 2) +  # 下雪司机少
-        -5 * (hour >= 0) & (hour <= 5)  # 深夜司机少
+        -5 * ((hour >= 0) & (hour <= 5))  # 深夜司机少 (修复运算符优先级)
     )
 
     # 需求/供给比 (Demand-Supply Ratio)

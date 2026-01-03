@@ -84,8 +84,8 @@ def segment_users_by_uplift(
     # 计算基线转化率 (控制组)
     mask_control = df['T'] == 0
     if mask_control.sum() > 0:
-        # 简单估计: 使用相似用户的平均转化率
-        df['baseline_conversion'] = df['conversion'].mean()
+        # 基线转化率应该使用控制组 (未发券用户) 的转化率
+        df['baseline_conversion'] = df.loc[mask_control, 'conversion'].mean()
     else:
         df['baseline_conversion'] = 0.15
 

@@ -399,6 +399,98 @@ def create_app():
                     with gr.Tab("Model Comparison", id="comparison"):
                         model_comparison.render()
 
+            # ==================== BusinessCases ====================
+            with gr.Tab("BusinessCases", id="business_cases"):
+                gr.Markdown("""
+                ## BusinessCases - 端到端业务案例
+
+                从真实业务问题出发，展示完整的数据科学工作流。
+                """)
+
+                from business_cases import (
+                    marketing_roi,
+                    growth_attribution,
+                    pricing_optimization
+                )
+
+                with gr.Tabs() as business_tabs:
+                    with gr.Tab("Marketing ROI", id="marketing"):
+                        marketing_roi.render()
+
+                    with gr.Tab("Growth Attribution", id="growth"):
+                        growth_attribution.render()
+
+                    with gr.Tab("Pricing Optimization", id="pricing"):
+                        pricing_optimization.render()
+
+            # ==================== ABTestingToolkit ====================
+            with gr.Tab("A/B Testing", id="ab_testing"):
+                gr.Markdown("""
+                ## A/B Testing Toolkit - 实验分析工具箱
+
+                完整的 A/B 测试支持：样本量计算、功效分析、结果分析、报告生成。
+                """)
+
+                from ab_testing_toolkit import (
+                    sample_size,
+                    power_analysis,
+                    experiment_analysis,
+                    report_generator
+                )
+
+                with gr.Tabs() as ab_tabs:
+                    with gr.Tab("Sample Size Calculator", id="sample_size"):
+                        sample_size.render()
+
+                    with gr.Tab("Power Analysis", id="power"):
+                        power_analysis.render()
+
+                    with gr.Tab("Experiment Analysis", id="exp_analysis"):
+                        experiment_analysis.render()
+
+                    with gr.Tab("Report Generator", id="report"):
+                        report_generator.render()
+
+            # ==================== MetricsFramework ====================
+            with gr.Tab("Metrics", id="metrics"):
+                gr.Markdown("""
+                ## Metrics Framework - 指标体系设计
+
+                帮助设计和管理业务指标体系。
+                """)
+
+                from metrics_framework import (
+                    metric_design,
+                    metric_tree
+                )
+
+                with gr.Tabs() as metrics_tabs:
+                    with gr.Tab("Metric Design", id="metric_design"):
+                        metric_design.render()
+
+                    with gr.Tab("Metric Tree", id="metric_tree"):
+                        metric_tree.render()
+
+            # ==================== SQLAnalytics ====================
+            with gr.Tab("SQL Analytics", id="sql"):
+                gr.Markdown("""
+                ## SQL Analytics - 业务 SQL 分析
+
+                常见业务分析场景的 SQL 模板和最佳实践。
+                """)
+
+                from sql_analytics import (
+                    retention,
+                    funnel
+                )
+
+                with gr.Tabs() as sql_tabs:
+                    with gr.Tab("Retention Analysis", id="retention"):
+                        retention.render()
+
+                    with gr.Tab("Funnel Analysis", id="funnel"):
+                        funnel.render()
+
         # 底部信息
         gr.HTML("""
         <div style="

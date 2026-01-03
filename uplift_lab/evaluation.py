@@ -108,8 +108,10 @@ def demonstrate_uplift_evaluation(
                     'uplift': uplift
                 })
 
-    if group_stats:
-        stats_df = pd.DataFrame(group_stats)
+    # 初始化 stats_df 以避免作用域问题
+    stats_df = pd.DataFrame(group_stats) if group_stats else pd.DataFrame(columns=['decile', 'conv_treatment', 'conv_control', 'uplift'])
+
+    if len(stats_df) > 0:
 
         fig.add_trace(go.Bar(
             x=stats_df['decile'], y=stats_df['conv_treatment'],
@@ -182,7 +184,9 @@ def demonstrate_uplift_evaluation(
 
     # 摘要
     overall_uplift = Y[T == 1].mean() - Y[T == 0].mean()
-    top_10_uplift = stats_df[stats_df['decile'] == 1]['uplift'].values[0] if len(stats_df) > 0 else 0
+    # 安全地获取 top 10% uplift
+    top_10_data = stats_df[stats_df['decile'] == 1]['uplift'].values if len(stats_df) > 0 else []
+    top_10_uplift = top_10_data[0] if len(top_10_data) > 0 else 0
 
     summary = f"""
 ### 评估结果

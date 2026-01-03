@@ -207,14 +207,15 @@ def visualize_tarnet(
         alpha=alpha
     )
 
-    # 预测
+    # 预测 - 确保 tensor 在正确的 device 上
     model.eval()
     with torch.no_grad():
-        X_tensor = torch.FloatTensor(X)
+        device = next(model.parameters()).device
+        X_tensor = torch.FloatTensor(X).to(device)
         Y0_pred, Y1_pred, phi = model(X_tensor)
-        Y0_pred = Y0_pred.numpy()
-        Y1_pred = Y1_pred.numpy()
-        phi = phi.numpy()
+        Y0_pred = Y0_pred.cpu().numpy()
+        Y1_pred = Y1_pred.cpu().numpy()
+        phi = phi.cpu().numpy()
 
     # 计算指标
     pehe_val = pehe(Y0_true, Y1_true, Y0_pred, Y1_pred)

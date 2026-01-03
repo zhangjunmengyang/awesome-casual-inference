@@ -1,5 +1,7 @@
 # Causal Inference Workbench
 
+> Casual inference play ground
+
 一站式因果推断学习与可视化平台，面向数据科学家和算法工程师的因果推断探索工具。
 
 聚焦 **Model-Based** 方法，涵盖深度学习、机器学习因果模型，配合交互式可视化帮助理解算法原理。

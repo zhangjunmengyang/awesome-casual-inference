@@ -153,8 +153,13 @@ class AIPWEstimator:
         clip_weights: 是否裁剪权重
         """
         self.propensity_model = propensity_model or LogisticRegression(max_iter=1000, random_state=42)
-        self.outcome_model_0 = outcome_model or Ridge(alpha=1.0, random_state=42)
-        self.outcome_model_1 = outcome_model or Ridge(alpha=1.0, random_state=43)
+        if outcome_model is None:
+            self.outcome_model_0 = Ridge(alpha=1.0, random_state=42)
+            self.outcome_model_1 = Ridge(alpha=1.0, random_state=43)
+        else:
+            from sklearn.base import clone
+            self.outcome_model_0 = clone(outcome_model)
+            self.outcome_model_1 = clone(outcome_model)
         self.clip_weights = clip_weights
 
     def estimate_ate(self, X: np.ndarray, T: np.ndarray, Y: np.ndarray) -> Tuple[float, float]:
@@ -547,9 +552,9 @@ ESS 衡量权重分散程度。ESS 越接近 n，权重越均匀。
 
 这使得 AIPW 成为实践中的首选方法。
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter2_treatment_effect/ex2_ipw.py` 中的练习。
+对比不同倾向得分模型（Logistic Regression vs GBM）对 IPW 估计的影响。
         """)
 
     return None

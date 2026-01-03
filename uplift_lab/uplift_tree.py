@@ -349,9 +349,9 @@ Uplift Tree: 最大化处理效应的异质性 (如 KL 散度、欧氏距离)
         gr.Markdown("""
 ---
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter3_uplift/ex2_uplift_tree.py` 中的练习。
+使用 causalml 库的 UpliftTreeClassifier 进行用户分群实验。
         """)
 
     return None

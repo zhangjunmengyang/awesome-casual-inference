@@ -496,9 +496,9 @@ SMD = (mean_treated - mean_control) / pooled_std
 - 可能丢失未匹配样本，损失效率
 - 只能控制观测到的混淆
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter2_treatment_effect/ex1_psm.py` 中的练习。
+尝试使用 scikit-learn 实现自己的倾向得分匹配方法，并与本模块对比结果。
         """)
 
     return None

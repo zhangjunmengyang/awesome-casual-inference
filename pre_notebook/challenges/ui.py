@@ -115,13 +115,101 @@ def submit_predictions(challenge_name: str, user_name: str, code: str):
     challenge = CURRENT_CHALLENGES[challenge_name]
 
     try:
-        # 执行用户代码
-        # 为安全起见，这里使用受限的执行环境
+        # 安全警告：exec() 执行用户代码存在安全风险
+        # 在生产环境中应使用沙箱隔离（如 RestrictedPython 或容器化执行）
+        # 当前实现仅适用于本地学习环境
+
+        # 代码长度限制
+        if len(code) > 50000:
+            return None, "Error: Code is too long (max 50000 characters)"
+
+        # 安全检查：使用 AST 解析来检测危险操作
+        import ast
+
+        try:
+            tree = ast.parse(code)
+        except SyntaxError as e:
+            return None, f"Syntax Error: {str(e)}"
+
+        # 禁止的 AST 节点类型
+        forbidden_nodes = {
+            ast.Import: "import statements are not allowed (use np and pd directly)",
+            ast.ImportFrom: "from...import statements are not allowed",
+        }
+
+        # 禁止的函数调用
+        forbidden_calls = {
+            'eval', 'exec', 'compile', 'open', 'input',
+            '__import__', 'globals', 'locals', 'vars', 'dir',
+            'getattr', 'setattr', 'delattr', 'hasattr',
+            'breakpoint', 'exit', 'quit',
+        }
+
+        # 禁止的属性访问模式
+        forbidden_attrs = {
+            '__class__', '__base__', '__bases__', '__mro__',
+            '__subclasses__', '__dict__', '__globals__',
+            '__code__', '__closure__', '__func__',
+            '__self__', '__module__', '__builtins__',
+        }
+
+        class SecurityVisitor(ast.NodeVisitor):
+            def __init__(self):
+                self.errors = []
+
+            def visit_Import(self, node):
+                self.errors.append("import statements are not allowed (use np and pd directly)")
+                self.generic_visit(node)
+
+            def visit_ImportFrom(self, node):
+                self.errors.append("from...import statements are not allowed")
+                self.generic_visit(node)
+
+            def visit_Call(self, node):
+                # 检查函数调用
+                if isinstance(node.func, ast.Name):
+                    if node.func.id in forbidden_calls:
+                        self.errors.append(f"Function '{node.func.id}' is not allowed")
+                elif isinstance(node.func, ast.Attribute):
+                    if node.func.attr in forbidden_calls:
+                        self.errors.append(f"Function '{node.func.attr}' is not allowed")
+                self.generic_visit(node)
+
+            def visit_Attribute(self, node):
+                # 检查危险属性访问
+                if node.attr in forbidden_attrs:
+                    self.errors.append(f"Accessing '{node.attr}' is not allowed")
+                self.generic_visit(node)
+
+        visitor = SecurityVisitor()
+        visitor.visit(tree)
+
+        if visitor.errors:
+            return None, f"Security Error: {'; '.join(visitor.errors)}"
+
+        # 定义受限的内置函数白名单
+        safe_builtins = {
+            'len': len, 'range': range, 'enumerate': enumerate, 'zip': zip,
+            'map': map, 'filter': filter, 'sorted': sorted, 'reversed': reversed,
+            'min': min, 'max': max, 'sum': sum, 'abs': abs, 'round': round,
+            'int': int, 'float': float, 'str': str, 'bool': bool, 'list': list,
+            'dict': dict, 'tuple': tuple, 'set': set, 'print': print,
+            'True': True, 'False': False, 'None': None,
+            'isinstance': isinstance, 'type': type,
+            'slice': slice, 'iter': iter, 'next': next,
+            'all': all, 'any': any,
+            'pow': pow, 'divmod': divmod,
+            'Exception': Exception, 'ValueError': ValueError,
+            'TypeError': TypeError, 'KeyError': KeyError,
+            'IndexError': IndexError, 'AttributeError': AttributeError,
+        }
+
         namespace = {
+            '__builtins__': safe_builtins,
             'np': np,
             'pd': pd,
-            'train_data': challenge.train_data,
-            'test_data': challenge.test_data
+            'train_data': challenge.train_data.copy(),  # 使用副本防止修改原数据
+            'test_data': challenge.test_data.copy(),
         }
 
         exec(code, namespace)

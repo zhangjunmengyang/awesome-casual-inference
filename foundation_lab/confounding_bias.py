@@ -14,32 +14,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-
-def generate_confounded_data(
-    n_samples: int = 1000,
-    true_ate: float = 2.0,
-    confounding_strength: float = 2.0,
-    seed: int = 42
-) -> pd.DataFrame:
-    """生成带混淆的数据"""
-    np.random.seed(seed)
-
-    # 混淆变量 X
-    X = np.random.randn(n_samples)
-
-    # 处理分配受 X 影响 (正向混淆)
-    propensity = 1 / (1 + np.exp(-confounding_strength * X))
-    T = np.random.binomial(1, propensity)
-
-    # 结果受 X 和 T 影响
-    Y = 5 + true_ate * T + confounding_strength * X + np.random.randn(n_samples) * 0.8
-
-    return pd.DataFrame({
-        'X': X,
-        'T': T,
-        'Y': Y,
-        'propensity': propensity
-    })
+from .utils import generate_confounded_data
 
 
 def visualize_confounding(
@@ -49,7 +24,7 @@ def visualize_confounding(
 ) -> tuple:
     """可视化混淆偏差"""
 
-    df = generate_confounded_data(n_samples, true_ate, confounding_strength)
+    df, _ = generate_confounded_data(n_samples, true_ate, confounding_strength)
 
     # 计算估计
     naive_ate = df[df['T'] == 1]['Y'].mean() - df[df['T'] == 0]['Y'].mean()
@@ -369,9 +344,9 @@ def render():
 2. 为什么 Simpson's Paradox 在实际中很危险？
 3. 如何判断是否存在未观测混淆？
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter1_foundation/ex3_confounding.py` 中的练习。
+尝试设计一个包含多个混淆变量的场景，思考如何识别和控制它们。
         """)
 
     return None

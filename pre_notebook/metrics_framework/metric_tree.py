@@ -71,18 +71,75 @@ class MetricTree:
         计算各节点对根节点变化的贡献
 
         使用对数分解法：
-        如果 Y = A × B × C，则
-        Δln(Y) = Δln(A) + Δln(B) + Δln(C)
+        对于乘法分解 Y = A × B × C：
+            Δln(Y) = Δln(A) + Δln(B) + Δln(C)
+            各因素贡献 = Δln(factor) / Δln(Y) * 100%
+
+        对于加法分解 Y = A + B + C：
+            各因素贡献 = ΔA / ΔY * 100%
+
+        返回各叶子节点对根节点变化的贡献百分比
         """
         contributions = {}
 
-        def _calculate(node: MetricNode, parent_change: float = 1.0):
-            if node.change is not None:
-                contributions[node.name] = node.change
-            for child in node.children:
-                _calculate(child, node.change or 1.0)
+        # 计算根节点的对数变化
+        root_log_change = 0.0
+        if (self.root.value is not None and self.root.previous_value is not None
+                and self.root.value > 0 and self.root.previous_value > 0):
+            root_log_change = np.log(self.root.value / self.root.previous_value)
 
-        _calculate(self.root)
+        def _calculate_log_contribution(node: MetricNode, parent_type: DecompositionType) -> float:
+            """递归计算节点的对数贡献"""
+            if node.value is None or node.previous_value is None:
+                return 0.0
+
+            if node.value <= 0 or node.previous_value <= 0:
+                # 对于非正值，使用绝对变化
+                return node.value - node.previous_value
+
+            log_change = np.log(node.value / node.previous_value)
+
+            if len(node.children) == 0:
+                # 叶子节点：返回对数变化
+                return log_change
+            else:
+                # 中间节点：递归处理子节点
+                if node.decomposition_type == DecompositionType.MULTIPLICATIVE:
+                    # 乘法分解：子节点对数变化之和等于父节点对数变化
+                    for child in node.children:
+                        child_contrib = _calculate_log_contribution(child, node.decomposition_type)
+                        if len(child.children) == 0:  # 只记录叶子节点
+                            contributions[child.name] = child_contrib
+                else:
+                    # 加法分解：子节点绝对变化之和等于父节点绝对变化
+                    parent_abs_change = node.value - node.previous_value
+                    for child in node.children:
+                        if child.value is not None and child.previous_value is not None:
+                            child_abs_change = child.value - child.previous_value
+                            # 转换为对根节点的贡献（相对于父节点的对数变化）
+                            if parent_abs_change != 0:
+                                child_contrib = (child_abs_change / parent_abs_change) * log_change
+                            else:
+                                child_contrib = 0.0
+
+                            if len(child.children) == 0:
+                                contributions[child.name] = child_contrib
+                            else:
+                                _calculate_log_contribution(child, node.decomposition_type)
+
+                return log_change
+
+        _calculate_log_contribution(self.root, self.root.decomposition_type)
+
+        # 将对数贡献转换为百分比（相对于根节点的对数变化）
+        if root_log_change != 0:
+            for name in contributions:
+                contributions[name] = contributions[name] / root_log_change
+        else:
+            # 如果根节点没有变化，所有贡献为0
+            for name in contributions:
+                contributions[name] = 0.0
+
         return contributions
 
     def to_dict(self) -> Dict:
@@ -214,9 +271,16 @@ def waterfall_decomposition(tree: MetricTree) -> go.Figure:
     values = [root.previous_value]
 
     running_total = root.previous_value
+    total_abs_change = root.value - root.previous_value if root.value and root.previous_value else 0
+
     for c in contributions:
-        # 简化的贡献计算
-        contrib_value = root.previous_value * c['change'] / len(contributions)
+        # 基于绝对变化值计算贡献
+        # 每个子指标的贡献 = 子指标的绝对变化值
+        if c.get('previous_value') is not None and c.get('value') is not None:
+            contrib_value = c['value'] - c['previous_value']
+        else:
+            # 如果没有具体值，按变化率比例分配
+            contrib_value = total_abs_change * (c['change'] if c['change'] else 0)
         values.append(contrib_value)
         running_total += contrib_value
 
@@ -360,15 +424,15 @@ def run_metric_tree_analysis(
         direction = '↑' if child.change and child.change > 0 else '↓'
         report += f"| {child.name} | {child.change*100 if child.change else 0:+.1f}% | {direction} |\n"
 
-    # 找到最大贡献因素
-    max_contrib = max(contributions.items(), key=lambda x: abs(x[1]))
+    # 找到最大贡献因素（贡献度现在是百分比形式，范围 0-1）
+    max_contrib = max(contributions.items(), key=lambda x: x[1])
     min_contrib = min(contributions.items(), key=lambda x: x[1])
 
     report += f"""
 #### 关键发现
 
-1. **最大正向贡献**: {max_contrib[0]} ({max_contrib[1]*100:+.1f}%)
-2. **需要关注**: {min_contrib[0]} ({min_contrib[1]*100:+.1f}%)
+1. **最大正向贡献**: {max_contrib[0]} (贡献 {max_contrib[1]*100:.1f}% 的增长)
+2. **需要关注**: {min_contrib[0]} (贡献 {min_contrib[1]*100:.1f}% 的增长)
 
 #### 行动建议
 

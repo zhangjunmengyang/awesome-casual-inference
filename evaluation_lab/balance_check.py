@@ -107,8 +107,15 @@ def perform_balance_check(
         ), row=1, col=1)
 
     # 添加阈值线 (SMD < 0.1 认为平衡良好)
-    fig.add_vline(x=0.1, line_dash="dash", line_color="gray", row=1, col=1)
-    fig.add_vline(x=-0.1, line_dash="dash", line_color="gray", row=1, col=1)
+    for threshold in [0.1, -0.1]:
+        fig.add_shape(
+            type="line",
+            x0=threshold, x1=threshold,
+            y0=0, y1=1,
+            yref="y domain",
+            line=dict(dash="dash", color="gray"),
+            row=1, col=1
+        )
 
     # 2. Variance Ratio
     var_ratio_before = balance_before['variance_ratio'].values
@@ -134,9 +141,15 @@ def perform_balance_check(
         ), row=1, col=2)
 
     # 添加阈值线 (0.5 < VR < 2 认为平衡良好)
-    fig.add_vline(x=0.5, line_dash="dash", line_color="gray", row=1, col=2)
-    fig.add_vline(x=2.0, line_dash="dash", line_color="gray", row=1, col=2)
-    fig.add_vline(x=1.0, line_dash="dot", line_color="gray", row=1, col=2)
+    for threshold, dash_style in [(0.5, "dash"), (2.0, "dash"), (1.0, "dot")]:
+        fig.add_shape(
+            type="line",
+            x0=threshold, x1=threshold,
+            y0=0, y1=1,
+            yref="y2 domain",
+            line=dict(dash=dash_style, color="gray"),
+            row=1, col=2
+        )
 
     # 3. Mean Difference by Feature
     mean_diff_before = balance_before['mean_t'].values - balance_before['mean_c'].values

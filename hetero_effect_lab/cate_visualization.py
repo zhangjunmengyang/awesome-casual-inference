@@ -684,9 +684,9 @@ tree.fit(X, pred_cate)
 - Athey & Wager (2019). "Estimating Treatment Effects with Causal Forests"
 - Künzel et al. (2019). "Metalearners for estimating heterogeneous treatment effects"
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter5_hetero_effect/ex3_cate_visualization.py` 中的练习。
+使用 SHAP 值解释 CATE 模型的预测结果。
         """)
 
     return None

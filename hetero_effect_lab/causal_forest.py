@@ -431,9 +431,9 @@ $$\\hat{\\tau}(x) \\pm z_{\\alpha/2} \\cdot \\hat{\\sigma}(x) / \\sqrt{n}$$
 - Wager & Athey (2018). "Estimation and Inference of Heterogeneous Treatment Effects using Random Forests". JASA.
 - Athey, Tibshirani & Wager (2019). "Generalized Random Forests". Annals of Statistics.
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter5_hetero_effect/ex1_causal_forest.py` 中的练习。
+使用 EconML 的 CausalForestDML 分析你的业务数据中的异质效应。
         """)
 
     return None

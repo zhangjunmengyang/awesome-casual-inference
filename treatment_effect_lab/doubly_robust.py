@@ -65,8 +65,9 @@ class DoublyRobustEstimator:
                 self.outcome_model_0 = RandomForestRegressor(n_estimators=100, random_state=42)
                 self.outcome_model_1 = RandomForestRegressor(n_estimators=100, random_state=43)
         else:
-            self.outcome_model_0 = outcome_model
-            self.outcome_model_1 = outcome_model
+            from sklearn.base import clone
+            self.outcome_model_0 = clone(outcome_model)
+            self.outcome_model_1 = clone(outcome_model)
 
     def estimate_ate(
         self,
@@ -606,9 +607,9 @@ ATE = E[(mu_1(X) - mu_0(X)) +
 - **目标化学习 (Targeted Learning)**: 进一步优化效率
 - **去偏机器学习 (Debiased ML)**: 结合高维机器学习
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter2_treatment_effect/ex3_doubly_robust.py` 中的练习。
+使用真实数据验证双重稳健性：故意错误指定一个模型，观察估计的鲁棒性。
         """)
 
     return None

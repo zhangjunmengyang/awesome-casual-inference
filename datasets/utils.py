@@ -503,7 +503,7 @@ def plot_propensity_overlap(
 
 if __name__ == "__main__":
     # 测试代码
-    from synthetic import generate_heterogeneous_dgp
+    from .synthetic import generate_heterogeneous_dgp
 
     print("="*60)
     print("Testing Dataset Utils")

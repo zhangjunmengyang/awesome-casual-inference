@@ -257,15 +257,14 @@ def cate_evaluation():
     # 使用 true_ite 评估
 ```
 
-### 在练习中使用
+### 在 Notebook 中使用
 ```python
-# exercises/chapter2_treatment_effect/ex1_psm.py
+# notebooks/treatment_effect_practice.ipynb
 from datasets import load_lalonde
 
-def exercise_psm():
-    # TODO: 使用 PSID 数据实现倾向得分匹配
-    df = load_lalonde('psid')
-    # ...
+# 使用 PSID 数据实现倾向得分匹配
+df = load_lalonde('psid')
+# ...
 ```
 
 ## 性能统计

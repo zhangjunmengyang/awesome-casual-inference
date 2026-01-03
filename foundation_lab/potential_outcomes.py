@@ -78,10 +78,22 @@ def create_potential_outcomes_visualization(
         showlegend=False
     ), row=1, col=2)
 
-    fig.add_vline(
-        x=true_ate, row=1, col=2,
-        line_dash="dash", line_color="red",
-        annotation_text=f"ATE={true_ate:.2f}"
+    # 在 ITE 直方图上添加 ATE 参考线
+    fig.add_shape(
+        type="line",
+        x0=true_ate, x1=true_ate,
+        y0=0, y1=1,
+        yref="y2 domain",
+        line=dict(dash="dash", color="red"),
+        row=1, col=2
+    )
+    fig.add_annotation(
+        x=true_ate, y=1.05,
+        yref="y2 domain",
+        text=f"ATE={true_ate:.2f}",
+        showarrow=False,
+        font=dict(color="red"),
+        row=1, col=2
     )
 
     # 3. 观测数据
@@ -102,7 +114,7 @@ def create_potential_outcomes_visualization(
         name='处理组 (T=1)',
         marker=dict(color='red', opacity=0.6, size=5),
         legendgroup='observed'
-    ), row=2, col=2)
+    ), row=2, col=1)  # 修正：观测数据应该都在 (2,1)
 
     # 4. 反事实可视化 (可选)
     if show_counterfactual:
@@ -282,15 +294,11 @@ def render():
             )
 
         gr.Markdown("""
-### 思考题
+### 思考练习
 
 1. 如果我们能观测到所有潜在结果，因果推断会有什么不同？
 2. 为什么随机实验可以识别平均处理效应？
 3. ITE 的异质性对营销策略有什么启示？
-
-### 练习
-
-完成 `exercises/chapter1_foundation/ex1_potential_outcomes.py` 中的练习。
         """)
 
         run_btn.click(

@@ -81,15 +81,26 @@ def generate_experiment_data(
     is_treatment = (group == 'treatment').astype(int)
 
     # 基线转化概率
-    base_prob = 1 / (1 + np.exp(-(
-        -3 + 2 * user_activity + 1.5 * historical_conversion + 0.01 * (age - 35)
-    )))
+    # 使用 logit 变换确保基线转化率与 baseline_rate 参数对齐
+    # logit(baseline_rate) 作为基准，用户特征在此基础上调整
+    base_logit = np.log(baseline_rate / (1 - baseline_rate))  # 将目标 baseline_rate 转为 logit
 
-    # 实验效应
-    treatment_effect = true_effect * baseline_rate
+    # 用户特征的影响 (在 logit 空间上加减)
+    user_effect = (
+        1.5 * (user_activity - 0.3) +  # 活跃度影响 (中心化)
+        1.0 * (historical_conversion - 0.2) +  # 历史转化影响 (中心化)
+        0.005 * (age - 35)  # 年龄影响
+    )
+
+    # 最终基线概率
+    base_prob = 1 / (1 + np.exp(-(base_logit + user_effect)))
+
+    # 实验效应：true_effect 是相对提升，所以处理效应 = 基线概率 × 相对提升
+    # 对于每个用户，处理效应与其基线概率成比例
+    treatment_effect_individual = base_prob * true_effect
 
     # 实际转化概率
-    prob = base_prob + is_treatment * treatment_effect
+    prob = base_prob + is_treatment * treatment_effect_individual
     prob = np.clip(prob, 0, 1)
 
     # 转化
@@ -303,8 +314,8 @@ def check_srm(df: pd.DataFrame, group_col: str = 'group',
 
     observed_ratio = n_treatment / n_total
 
-    # 二项检验
-    p_value = stats.binom_test(n_treatment, n_total, expected_ratio)
+    # 二项检验 (使用新版 API)
+    p_value = stats.binomtest(n_treatment, n_total, expected_ratio).pvalue
 
     # 或使用卡方检验
     expected_treatment = n_total * expected_ratio

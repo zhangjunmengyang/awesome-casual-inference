@@ -408,9 +408,9 @@ def render():
 2. 如何判断一个变量是混淆变量还是中介变量？
 3. 当存在未观测混淆时，有哪些识别策略？
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter1_foundation/ex2_causal_dag.py` 中的练习。
+尝试使用 DoWhy 或 pgmpy 构建你自己的因果图。
         """)
 
     return None

@@ -93,27 +93,44 @@ WITH ordered_events AS (
     WHERE event_type IN ('page_view', 'click', 'add_cart', 'purchase')
 ),
 
+step1_cte AS (
+    SELECT user_id, MIN(event_time) AS step1_time
+    FROM ordered_events
+    WHERE event_type = 'page_view'
+    GROUP BY user_id
+),
+step2_cte AS (
+    SELECT o.user_id, MIN(o.event_time) AS step2_time
+    FROM ordered_events o
+    JOIN step1_cte s1 ON o.user_id = s1.user_id
+    WHERE o.event_type = 'click' AND o.event_time > s1.step1_time
+    GROUP BY o.user_id
+),
+step3_cte AS (
+    SELECT o.user_id, MIN(o.event_time) AS step3_time
+    FROM ordered_events o
+    JOIN step2_cte s2 ON o.user_id = s2.user_id
+    WHERE o.event_type = 'add_cart' AND o.event_time > s2.step2_time
+    GROUP BY o.user_id
+),
+step4_cte AS (
+    SELECT o.user_id, MIN(o.event_time) AS step4_time
+    FROM ordered_events o
+    JOIN step3_cte s3 ON o.user_id = s3.user_id
+    WHERE o.event_type = 'purchase' AND o.event_time > s3.step3_time
+    GROUP BY o.user_id
+),
 funnel_steps AS (
     SELECT
-        user_id,
-        -- 第1步：首次浏览
-        MIN(CASE WHEN event_type = 'page_view' THEN event_time END) AS step1_time,
-        -- 第2步：浏览后点击
-        MIN(CASE WHEN event_type = 'click'
-                 AND event_time > (SELECT MIN(event_time) FROM ordered_events o2
-                                   WHERE o2.user_id = ordered_events.user_id
-                                   AND o2.event_type = 'page_view')
-            THEN event_time END) AS step2_time,
-        -- 第3步：点击后加购
-        MIN(CASE WHEN event_type = 'add_cart'
-                 AND event_time > step2_time
-            THEN event_time END) AS step3_time,
-        -- 第4步：加购后支付
-        MIN(CASE WHEN event_type = 'purchase'
-                 AND event_time > step3_time
-            THEN event_time END) AS step4_time
-    FROM ordered_events
-    GROUP BY user_id
+        s1.user_id,
+        s1.step1_time,
+        s2.step2_time,
+        s3.step3_time,
+        s4.step4_time
+    FROM step1_cte s1
+    LEFT JOIN step2_cte s2 ON s1.user_id = s2.user_id
+    LEFT JOIN step3_cte s3 ON s1.user_id = s3.user_id
+    LEFT JOIN step4_cte s4 ON s1.user_id = s4.user_id
 )
 
 SELECT

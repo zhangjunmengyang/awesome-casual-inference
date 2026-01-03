@@ -435,9 +435,9 @@ Stage 2: D_1 = Y - mu_0(X), D_0 = mu_1(X) - Y
 Final:   tau(x) = e(x)*tau_0(x) + (1-e(x))*tau_1(x)
 ```
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter3_uplift/ex1_meta_learners.py` 中的练习。
+使用真实营销数据比较 S/T/X-Learner 的表现差异。
         """)
 
     return None

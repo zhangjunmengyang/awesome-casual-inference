@@ -213,13 +213,13 @@ ESS = (sum(w))^2 / sum(w^2)
 3. Bang, H., & Robins, J. M. (2005). Doubly robust estimation in missing data and causal inference models.
 4. Lunceford, J. K., & Davidian, M. (2004). Stratification and weighting via the propensity score in estimation of causal treatment effects.
 
-## 练习
+## 实践练习
 
-完成以下练习以加深理解:
+建议完成以下练习以加深理解:
 
-1. `exercises/chapter2_treatment_effect/ex1_psm.py` - PSM 实践
-2. `exercises/chapter2_treatment_effect/ex2_ipw.py` - IPW 实践
-3. `exercises/chapter2_treatment_effect/ex3_doubly_robust.py` - 双重稳健性验证
+1. **PSM 实践**: 使用 scikit-learn 实现自己的倾向得分匹配
+2. **IPW 实践**: 对比不同倾向得分模型对估计的影响
+3. **双重稳健性验证**: 故意错误指定模型，观察估计的鲁棒性
 
 ## 可视化示例
 

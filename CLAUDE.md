@@ -52,8 +52,7 @@ python app.py
 ├── uplift_lab/               # Uplift 模型
 │   ├── meta_learners.py      # S/T/X-Learner
 │   ├── uplift_tree.py        # Uplift 决策树
-│   ├── evaluation.py         # Qini/Uplift 曲线
-│   └── cate_comparison.py    # CATE 对比
+│   └── evaluation.py         # Qini/Uplift 曲线
 │
 ├── hetero_effect_lab/        # 异质效应
 │   ├── causal_forest.py      # 因果森林
@@ -62,8 +61,7 @@ python app.py
 │
 ├── deep_causal_lab/          # 深度因果模型
 │   ├── tarnet.py             # TARNet
-│   ├── dragonnet.py          # DragonNet
-│   └── cevae.py              # CEVAE
+│   └── dragonnet.py          # DragonNet
 │
 ├── application_lab/          # 应用场景
 │   ├── coupon_optimization.py# 智能发券
@@ -86,8 +84,7 @@ python app.py
 │   ├── netflix_recommendation.py # Netflix 推荐
 │   └── uber_surge_pricing.py # Uber 动态定价
 │
-└── exercises/                # 练习代码
-    └── chapter1_foundation/
+└── notebooks/                # Jupyter Notebooks (实践练习)
 ```
 
 ## 开发规范

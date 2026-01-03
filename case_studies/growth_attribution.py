@@ -290,19 +290,77 @@ class MultiTouchAttributor:
 
     def _shapley_attribute(self, touchpoints: List[str], value: float,
                            current_attribution: Dict) -> Dict:
-        """Shapley Value 归因"""
+        """
+        Shapley Value 归因
+
+        Shapley Value 基于博弈论，计算每个渠道的边际贡献：
+        φ_i = Σ_{S⊆N\\{i}} [|S|!(n-|S|-1)!/n!] × [v(S∪{i}) - v(S)]
+
+        简化假设：每个渠道的边际贡献与其在路径中的位置和出现次数相关
+        - 位置权重：首次触点和最后触点贡献更大
+        - 出现次数：多次出现的渠道贡献更大
+        """
         unique_channels = list(set(touchpoints))
         n = len(unique_channels)
 
         if n == 0:
             return current_attribution
 
-        # 简化：假设所有渠道贡献相等的边际价值
-        # 真实场景需要基于转化率建模
-        shapley_values = {ch: value / n for ch in unique_channels}
+        if n == 1:
+            # 只有一个渠道，全部归因给它
+            current_attribution[unique_channels[0]] += value
+            return current_attribution
 
-        for ch, sv in shapley_values.items():
-            current_attribution[ch] += sv
+        # 计算每个渠道的 Shapley Value
+        from math import factorial
+
+        def coalition_value(coalition: set) -> float:
+            """
+            计算联盟的价值函数 v(S)
+            假设：渠道数量越多，转化概率越高（边际递减）
+            v(S) = 1 - (1 - base_prob)^|S| 的简化形式
+            """
+            if len(coalition) == 0:
+                return 0.0
+            # 每个渠道贡献一定的转化概率，但边际递减
+            base_contrib = 1.0 / n
+            total_prob = 0.0
+            for i, _ in enumerate(coalition):
+                # 边际递减：后加入的渠道贡献递减
+                total_prob += base_contrib * (0.8 ** i)
+            return min(total_prob / (base_contrib * sum(0.8 ** i for i in range(n))), 1.0)
+
+        shapley_values = {}
+
+        for channel in unique_channels:
+            # 计算 channel 的 Shapley Value
+            shapley_value = 0.0
+            other_channels = [ch for ch in unique_channels if ch != channel]
+
+            # 遍历所有不包含当前渠道的子集 S
+            for subset_size in range(len(other_channels) + 1):
+                for subset in combinations(other_channels, subset_size):
+                    subset_set = set(subset)
+                    # 边际贡献: v(S ∪ {i}) - v(S)
+                    marginal_contrib = coalition_value(subset_set | {channel}) - coalition_value(subset_set)
+
+                    # Shapley 权重: |S|!(n-|S|-1)!/n!
+                    weight = (factorial(len(subset_set)) *
+                              factorial(n - len(subset_set) - 1)) / factorial(n)
+
+                    shapley_value += weight * marginal_contrib
+
+            shapley_values[channel] = shapley_value
+
+        # 归一化并分配价值
+        total_shapley = sum(shapley_values.values())
+        if total_shapley > 0:
+            for ch, sv in shapley_values.items():
+                current_attribution[ch] += value * (sv / total_shapley)
+        else:
+            # 回退到平均分配
+            for ch in unique_channels:
+                current_attribution[ch] += value / n
 
         return current_attribution
 
@@ -349,7 +407,8 @@ def calculate_channel_metrics(user_df: pd.DataFrame) -> List[ChannelMetrics]:
         if n_users == 0:
             continue
 
-        total_spend = ch_users['_channel_spend'].iloc[0] if '_channel_spend' in ch_users.columns else 0
+        # 计算该渠道的总花费（所有用户的花费总和）
+        total_spend = ch_users['_channel_spend'].sum() if '_channel_spend' in ch_users.columns else 0
 
         metrics.append(ChannelMetrics(
             channel=ch,

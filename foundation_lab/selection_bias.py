@@ -423,9 +423,9 @@ def render():
 2. 如何在实际研究中避免存活偏差？
 3. 选择偏差和混淆偏差有什么区别？
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter1_foundation/ex4_selection_bias.py` 中的练习。
+思考你所在领域中可能存在的选择偏差，以及如何应对。
         """)
 
     return None

@@ -127,8 +127,6 @@ def create_app():
 
     with gr.Blocks(
         title="Causal Inference Workbench",
-        theme=CUSTOM_THEME,
-        css=CUSTOM_CSS,
         analytics_enabled=False
     ) as app:
 
@@ -251,7 +249,6 @@ def create_app():
                 from uplift_lab import (
                     meta_learners,
                     uplift_tree,
-                    cate_comparison,
                     evaluation
                 )
 
@@ -262,9 +259,6 @@ def create_app():
                     with gr.Tab("Uplift Tree", id="tree"):
                         uplift_tree.render()
 
-                    with gr.Tab("CATE Comparison", id="cate"):
-                        cate_comparison.render()
-
                     with gr.Tab("Evaluation", id="eval"):
                         evaluation.render()
 
@@ -273,13 +267,12 @@ def create_app():
                 gr.Markdown("""
                 ## DeepCausalLab - 深度因果模型
 
-                探索使用深度学习进行因果推断，包括 TARNet、DragonNet、CEVAE 等。
+                探索使用深度学习进行因果推断，包括 TARNet、DragonNet 等。
                 """)
 
                 from deep_causal_lab import (
                     tarnet,
-                    dragonnet,
-                    cevae
+                    dragonnet
                 )
 
                 with gr.Tabs() as deep_tabs:
@@ -288,20 +281,6 @@ def create_app():
 
                     with gr.Tab("DragonNet", id="dragon"):
                         dragonnet.render()
-
-                    with gr.Tab("CEVAE", id="cevae"):
-                        cevae.render()
-
-            # ==================== Challenges ====================
-            with gr.Tab("Challenges", id="challenges"):
-                gr.Markdown("""
-                ## Challenges - 因果推断竞赛
-
-                Kaggle 风格的挑战，测试你的因果推断技能!
-                """)
-
-                from challenges import ui as challenges_ui
-                challenges_ui.render()
 
             # ==================== HeteroEffectLab ====================
             with gr.Tab("HeteroEffectLab", id="hetero"):
@@ -327,53 +306,33 @@ def create_app():
                     with gr.Tab("CATE Visualization", id="cate_viz"):
                         cate_visualization.render()
 
-            # ==================== ApplicationLab ====================
-            with gr.Tab("ApplicationLab", id="application"):
+            # ==================== CaseStudies ====================
+            with gr.Tab("CaseStudies", id="case_studies"):
                 gr.Markdown("""
-                ## ApplicationLab - 行业应用案例
+                ## CaseStudies - 精选业务案例
 
-                将因果推断应用于真实业务场景，解决实际问题。
+                展示因果推断在真实业务场景中的应用，涵盖配送优化、推荐系统、渠道归因、智能发券等。
                 """)
 
-                from application_lab import (
-                    coupon_optimization,
-                    ab_enhancement,
-                    user_targeting
-                )
-
-                with gr.Tabs() as application_tabs:
-                    with gr.Tab("Coupon Optimization", id="coupon"):
-                        coupon_optimization.render()
-
-                    with gr.Tab("A/B Enhancement", id="ab"):
-                        ab_enhancement.render()
-
-                    with gr.Tab("User Targeting", id="targeting"):
-                        user_targeting.render()
-
-            # ==================== IndustryCases ====================
-            with gr.Tab("IndustryCases", id="industry_cases"):
-                gr.Markdown("""
-                ## IndustryCases - 行业真实案例
-
-                展示 DoorDash、Netflix、Uber 等科技公司的因果推断应用。
-                """)
-
-                from industry_cases import (
+                from case_studies import (
                     doordash_delivery,
                     netflix_recommendation,
-                    uber_surge_pricing
+                    growth_attribution,
+                    coupon_optimization
                 )
 
-                with gr.Tabs() as industry_tabs:
+                with gr.Tabs() as case_tabs:
                     with gr.Tab("DoorDash Delivery", id="doordash"):
                         doordash_delivery.render()
 
                     with gr.Tab("Netflix Recommendation", id="netflix"):
                         netflix_recommendation.render()
 
-                    with gr.Tab("Uber Surge Pricing", id="uber"):
-                        uber_surge_pricing.render()
+                    with gr.Tab("Growth Attribution", id="growth"):
+                        growth_attribution.render()
+
+                    with gr.Tab("Coupon Optimization", id="coupon"):
+                        coupon_optimization.render()
 
             # ==================== EvaluationLab ====================
             with gr.Tab("EvaluationLab", id="evaluation"):
@@ -398,30 +357,6 @@ def create_app():
 
                     with gr.Tab("Model Comparison", id="comparison"):
                         model_comparison.render()
-
-            # ==================== BusinessCases ====================
-            with gr.Tab("BusinessCases", id="business_cases"):
-                gr.Markdown("""
-                ## BusinessCases - 端到端业务案例
-
-                从真实业务问题出发，展示完整的数据科学工作流。
-                """)
-
-                from business_cases import (
-                    marketing_roi,
-                    growth_attribution,
-                    pricing_optimization
-                )
-
-                with gr.Tabs() as business_tabs:
-                    with gr.Tab("Marketing ROI", id="marketing"):
-                        marketing_roi.render()
-
-                    with gr.Tab("Growth Attribution", id="growth"):
-                        growth_attribution.render()
-
-                    with gr.Tab("Pricing Optimization", id="pricing"):
-                        pricing_optimization.render()
 
             # ==================== ABTestingToolkit ====================
             with gr.Tab("A/B Testing", id="ab_testing"):
@@ -451,46 +386,6 @@ def create_app():
                     with gr.Tab("Report Generator", id="report"):
                         report_generator.render()
 
-            # ==================== MetricsFramework ====================
-            with gr.Tab("Metrics", id="metrics"):
-                gr.Markdown("""
-                ## Metrics Framework - 指标体系设计
-
-                帮助设计和管理业务指标体系。
-                """)
-
-                from metrics_framework import (
-                    metric_design,
-                    metric_tree
-                )
-
-                with gr.Tabs() as metrics_tabs:
-                    with gr.Tab("Metric Design", id="metric_design"):
-                        metric_design.render()
-
-                    with gr.Tab("Metric Tree", id="metric_tree"):
-                        metric_tree.render()
-
-            # ==================== SQLAnalytics ====================
-            with gr.Tab("SQL Analytics", id="sql"):
-                gr.Markdown("""
-                ## SQL Analytics - 业务 SQL 分析
-
-                常见业务分析场景的 SQL 模板和最佳实践。
-                """)
-
-                from sql_analytics import (
-                    retention,
-                    funnel
-                )
-
-                with gr.Tabs() as sql_tabs:
-                    with gr.Tab("Retention Analysis", id="retention"):
-                        retention.render()
-
-                    with gr.Tab("Funnel Analysis", id="funnel"):
-                        funnel.render()
-
         # 底部信息
         gr.HTML("""
         <div style="
@@ -518,5 +413,7 @@ if __name__ == "__main__":
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
-        show_error=True
+        show_error=True,
+        theme=CUSTOM_THEME,
+        css=CUSTOM_CSS
     )

@@ -82,10 +82,24 @@ def segment_users_by_uplift(
     df['uplift_score'] = uplift_scores
 
     # 计算基线转化率 (控制组)
+    # 为每个用户估计其在不发券情况下的转化概率
     mask_control = df['T'] == 0
     if mask_control.sum() > 0:
-        # 基线转化率应该使用控制组 (未发券用户) 的转化率
-        df['baseline_conversion'] = df.loc[mask_control, 'conversion'].mean()
+        # 使用控制组数据拟合一个简单模型来预测基线转化率
+        from sklearn.linear_model import LogisticRegression
+        feature_cols = [c for c in df.columns if c.startswith('X') or c in ['order_frequency', 'days_since_last_order', 'avg_order_value']]
+        feature_cols = [c for c in feature_cols if c in df.columns]
+
+        if len(feature_cols) > 0 and mask_control.sum() >= 10:
+            model = LogisticRegression(max_iter=1000, random_state=42)
+            X_control = df.loc[mask_control, feature_cols].values
+            y_control = df.loc[mask_control, 'conversion'].values
+            model.fit(X_control, y_control)
+            # 为所有用户预测基线转化率
+            df['baseline_conversion'] = model.predict_proba(df[feature_cols].values)[:, 1]
+        else:
+            # 回退到使用控制组均值
+            df['baseline_conversion'] = df.loc[mask_control, 'conversion'].mean()
     else:
         df['baseline_conversion'] = 0.15
 

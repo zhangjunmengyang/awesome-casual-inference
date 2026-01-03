@@ -278,9 +278,9 @@ $$Qini(k) = \\sum_{i=1}^{k} Y_i \\cdot T_i - \\sum_{i=1}^{k} Y_i \\cdot (1-T_i) 
 - $T_i$: 第 i 个样本的处理状态
 - $n_{T,k}$, $n_{C,k}$: 前 k 个样本中处理/控制组的数量
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter3_uplift/ex3_evaluation.py` 中的练习。
+计算不同模型的 AUUC 并进行对比分析。
         """)
 
     return None

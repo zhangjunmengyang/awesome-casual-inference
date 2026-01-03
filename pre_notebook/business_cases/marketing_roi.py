@@ -623,12 +623,11 @@ def render():
 
 ---
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter7_business/ex1_marketing_roi.py` 中的练习：
-1. 实现增量归因器
-2. 计算各渠道的真实 ROI
-3. 设计预算优化策略
+1. 实现增量归因器，比较与传统归因模型的差异
+2. 计算各渠道的真实因果 ROI
+3. 基于 CATE 异质性设计预算优化策略
         """)
 
     return None

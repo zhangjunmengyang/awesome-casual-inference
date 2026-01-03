@@ -40,15 +40,11 @@ python app.py
 ├── 3. UpliftLab - 增益模型实验室
 │   ├── Meta-Learners (S/T/X/R-Learner)
 │   ├── Uplift Tree 可视化
-│   ├── CATE 估计对比
 │   └── Qini/Uplift 曲线评估
 │
 ├── 4. DeepCausalLab - 深度因果模型
-│   ├── CEVAE (因果变分自编码器)
-│   ├── DragonNet 架构解析
-│   ├── TARNet / CFR
-│   ├── GANITE
-│   └── Causal Transformer
+│   ├── TARNet 双塔网络
+│   └── DragonNet 架构解析
 │
 ├── 5. HeteroEffectLab - 异质性效应
 │   ├── Causal Forest 可视化
@@ -98,16 +94,13 @@ python app.py
 │   ├── utils.py
 │   ├── meta_learners.py          # S/T/X/R Learner
 │   ├── uplift_tree.py            # Uplift 决策树
-│   ├── cate_comparison.py        # CATE 对比
 │   └── evaluation.py             # Qini/Uplift 曲线
 │
 ├── deep_causal_lab/              # 深度因果模型模块
 │   ├── __init__.py
 │   ├── utils.py
 │   ├── tarnet.py                 # TARNet 模型
-│   ├── dragonnet.py              # DragonNet 模型
-│   ├── cevae.py                  # CEVAE 模型
-│   └── causal_transformer.py     # Causal Transformer
+│   └── dragonnet.py              # DragonNet 模型
 │
 ├── hetero_effect_lab/            # 异质性效应模块
 │   ├── __init__.py
@@ -130,15 +123,7 @@ python app.py
 │   ├── overlap_check.py          # 重叠假设
 │   └── model_comparison.py       # 模型对比
 │
-├── exercises/                    # 练习题目录
-│   ├── chapter1_foundation/
-│   ├── chapter2_treatment_effect/
-│   ├── chapter3_uplift/
-│   ├── chapter4_deep_causal/
-│   ├── chapter5_hetero_effect/
-│   └── chapter6_application/
-│
-└── notebooks/                    # Jupyter Notebooks
+└── notebooks/                    # Jupyter Notebooks (实践练习)
     ├── 01_foundation.ipynb
     ├── 02_treatment_effect.ipynb
     ├── 03_uplift_modeling.ipynb
@@ -187,7 +172,6 @@ python app.py
 |------|------|----------|
 | **Meta-Learners** | S/T/X/R Learner 对比 | 选择基学习器 |
 | **Uplift Tree** | 树结构可视化，分裂准则 | 调整树深度 |
-| **CATE 估计** | 异质性效应分布 | 特征选择 |
 | **评估曲线** | Qini/Uplift Curve | 调整干预比例 |
 
 **练习**:
@@ -202,8 +186,6 @@ python app.py
 |------|------|----------|
 | **TARNet** | 双塔结构可视化 | 网络参数调整 |
 | **DragonNet** | 端到端训练，倾向得分头 | Loss 权重调整 |
-| **CEVAE** | VAE 潜变量因果图 | 潜空间可视化 |
-| **Causal Transformer** | Attention 与因果效应 | 注意力图 |
 
 **练习**:
 - 实现简化版 TARNet

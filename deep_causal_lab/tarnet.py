@@ -426,9 +426,9 @@ $$L_{IPM} = MMD(\\Phi(X_{T=1}), \\Phi(X_{T=0}))$$
 **总损失**:
 $$L = L_{factual} + \\alpha \\cdot L_{IPM}$$
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter4_deep_causal/ex1_tarnet.py` 中的练习。
+修改 TARNet 架构，添加正则化层并观察效果变化。
         """)
 
     return None

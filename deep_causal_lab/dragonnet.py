@@ -460,9 +460,9 @@ DragonNet 是 TARNet 的扩展，添加了倾向得分头和 targeted regulariza
         gr.Markdown("""
 ---
 
-### 练习
+### 实践练习
 
-完成 `exercises/chapter4_deep_causal/ex2_dragonnet.py` 中的练习。
+调整 DragonNet 的 α 和 β 参数，观察对 CATE 估计的影响。
         """)
 
     return None

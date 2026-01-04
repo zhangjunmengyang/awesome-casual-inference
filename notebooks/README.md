@@ -32,8 +32,11 @@ Part 6: 营销应用 ────── "因果推断的业务落地"
     ▼
 Part 7: 高级主题 ────── "复杂因果问题的前沿方法"
     │
-    ├── Deep Dive ────── "技术细节深挖"
-    └── Pitfalls ─────── "常见错误警示"
+    ▼
+Part 8: 技术深挖 ────── "核心算法的底层原理"
+    │
+    ▼
+Part 9: 常见陷阱 ────── "实践中必须避开的坑"
 ```
 
 ---
@@ -378,51 +381,108 @@ Bunching 弹性:  ε = B / (h₀(z*)·Δz*) × z* / Δln(1-t)
 
 ---
 
-## Deep Dive: 技术深挖
+## Part 8: 技术深挖
 
-深入技术细节，适合想要彻底理解原理的学习者。
+### 引言
 
-| Notebook | 主题 | 核心要点 |
-|----------|------|----------|
-| **DD.01 处理不平衡** | Imbalanced Treatment | Focal Loss、Overlap Weights、Stabilized Weights、ESS 诊断 |
-| **DD.02 DragonNet 多处理** | Multi-Treatment | 二分类→多分类、Softmax、ModuleList |
-| **DD.03 因果森林分裂** | Splitting Criterion | CATE 方差最大化、Honest Splitting 原理、CART vs Causal Tree |
-| **DD.04 冷启动 Uplift** | Cold Start | Thompson Sampling、信息先验、探索-利用权衡 |
-| **DD.05 极端倾向得分** | Extreme Propensity | 权重爆炸诊断、Trimming vs Overlap vs CRUMP Bounds |
+> **学完这章，你能回答：**
+> - 处理组严重不平衡时，IPW 为什么会失效？怎么修复？
+> - 因果森林的分裂准则和普通随机森林有什么本质区别？
+> - 新用户没有历史数据，如何做 Uplift 建模？
+
+深入技术细节，适合想要彻底理解原理的学习者。每个 Deep Dive 都对应前面章节的核心技术，建议在学完对应章节后深入学习。
+
+### 学习内容
+
+| Notebook | 主题 | 核心要点 | 建议学习时机 |
+|----------|------|----------|--------------|
+| **8.1 处理不平衡** | Imbalanced Treatment | Focal Loss、Overlap Weights、Stabilized Weights、ESS 诊断 | Part 2 (IPW) 之后 |
+| **8.2 DragonNet 多处理** | Multi-Treatment | 二分类→多分类、Softmax、ModuleList | Part 5.2 之后 |
+| **8.3 因果森林分裂** | Splitting Criterion | CATE 方差最大化、Honest Splitting 原理、CART vs Causal Tree | Part 4.3 之后 |
+| **8.4 冷启动 Uplift** | Cold Start | Thompson Sampling、信息先验、探索-利用权衡 | Part 4 + 1.7 之后 |
+| **8.5 极端倾向得分** | Extreme Propensity | 权重爆炸诊断、Trimming vs Overlap vs CRUMP Bounds | Part 2.3 之后 |
+
+### 前置依赖
+
+```
+8.1 处理不平衡      ← Part 2.3 IPW
+8.2 DragonNet 多处理 ← Part 5.2 TARNet/DragonNet
+8.3 因果森林分裂     ← Part 4.3 因果森林
+8.4 冷启动 Uplift    ← Part 4 + Part 1.7 多臂老虎机
+8.5 极端倾向得分     ← Part 2.1-2.3 倾向得分/IPW
+```
 
 ---
 
-## Pitfalls: 常见陷阱
+## Part 9: 常见陷阱
 
-这些是实践中最容易犯的错误，**强烈建议学习**。
+### 引言
 
-| Notebook | 主题 | 核心警示 |
-|----------|------|----------|
-| **P.01 PSM 失效** | PSM Failure Modes | 什么情况下匹配会失败、共同支撑检验 |
-| **P.02 CUPED 误用** | CUPED Misuse | 协变量选择错误、使用实验后变量 |
-| **P.03 DID 违背** | DID Violations | 平行趋势假设不成立时的处理 |
-| **P.04 弱工具变量** | Weak IV | F 统计量诊断、弱工具的后果 |
-| **P.05 A/B 测试错误** | AB Testing Mistakes | 提前停止、多重比较、SRM 问题 |
+> **学完这章，你能回答：**
+> - PSM 在什么情况下会彻底失效？
+> - CUPED 用错了协变量会导致什么后果？
+> - A/B 测试中「偷看数据」为什么是大忌？
+
+这些是实践中最容易犯的错误，**强烈建议在学完对应章节后立即学习**，避免在实际工作中踩坑。
+
+### 学习内容
+
+| Notebook | 主题 | 核心警示 | 建议学习时机 |
+|----------|------|----------|--------------|
+| **9.1 PSM 失效模式** | PSM Failure Modes | 什么情况下匹配会失败、共同支撑检验 | Part 2.2 之后 |
+| **9.2 CUPED 误用** | CUPED Misuse | 协变量选择错误、使用实验后变量 | Part 1.2 之后 |
+| **9.3 DID 假设违背** | DID Violations | 平行趋势假设不成立时的处理 | Part 3.1 之后 |
+| **9.4 弱工具变量** | Weak IV | F 统计量诊断、弱工具的后果 | Part 3.4 之后 |
+| **9.5 A/B 测试错误** | AB Testing Mistakes | 提前停止、多重比较、SRM 问题 | Part 1.0-1.1 之后 |
+
+### 前置依赖
+
+```
+9.1 PSM 失效       ← Part 2.2 匹配方法
+9.2 CUPED 误用     ← Part 1.2 CUPED
+9.3 DID 假设违背   ← Part 3.1 双重差分
+9.4 弱工具变量     ← Part 3.4 工具变量
+9.5 A/B 测试错误   ← Part 1.0-1.1 A/B 基础
+```
+
+### 学习建议
+
+**推荐的 Pitfall 学习顺序：**
+
+1. 学完 Part 1.0-1.2 → 立即看 **9.5 A/B 测试错误** + **9.2 CUPED 误用**
+2. 学完 Part 2.1-2.3 → 立即看 **9.1 PSM 失效模式**
+3. 学完 Part 3.1 → 立即看 **9.3 DID 假设违背**
+4. 学完 Part 3.4 → 立即看 **9.4 弱工具变量**
 
 ---
 
 ## 学习建议
 
-### 推荐路线
+### 推荐路线（每天 5-8 小时）
 
-**入门路线 (1-2 个月)**
+**快速入门 (3 天)**
 ```
-Part 0 (基础) → Part 1.0-1.1 (A/B 测试) → Part 2.1-2.3 (PSM/IPW) → Pitfalls
-```
-
-**进阶路线 (3-4 个月)**
-```
-入门内容 → Part 1 完整 → Part 3 (准实验) → Part 4 (异质性) → Deep Dive
+Day 1: Part 0 全部 (4 notebooks)
+Day 2: Part 1.0-1.2 + 9.5 A/B 错误 + 9.2 CUPED 误用
+Day 3: Part 2.1-2.4 + 9.1 PSM 失效
 ```
 
-**精通路线 (6+ 个月)**
+**系统掌握 (1 周)**
 ```
-进阶内容 → Part 5 (深度学习) → Part 6 (应用) → Part 7 (高级) → 全部 Deep Dive
+Day 1-2: Part 1 完整 (8 notebooks)
+Day 3:   Part 2.5-2.6 + Part 3.1-3.2 + 9.3 DID 违背
+Day 4:   Part 3.3-3.4 + 9.4 弱工具
+Day 5:   Part 4 全部 + 8.3 因果森林分裂
+```
+
+**全面精通 (2 周)**
+```
+Week 1: 系统掌握内容
+Week 2:
+  Day 1-2: Part 5 + 8.2 DragonNet 多处理
+  Day 3:   Part 6 全部
+  Day 4-5: Part 7 全部
+  Day 6:   Part 8 剩余 + Part 9 剩余
 ```
 
 ### 学习方法
@@ -430,7 +490,8 @@ Part 0 (基础) → Part 1.0-1.1 (A/B 测试) → Part 2.1-2.3 (PSM/IPW) → Pit
 1. **先理论后代码**：每个 notebook 先理解数学框架，再看实现
 2. **动手做 TODO**：notebook 中的 TODO 是刻意设计的练习
 3. **关联业务场景**：学完一个方法，想想工作中能用在哪
-4. **回顾 Pitfalls**：学完一个主题后，看对应的陷阱章节
+4. **及时看 Pitfalls**：学完一个主题后，**立即**看对应的 Part 9 陷阱章节
+5. **按需深挖**：遇到实际问题时，回头看对应的 Part 8 技术细节
 
 ---
 

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "causal-inference-backend"
+version = "1.0.0"
+description = "Causal Inference Workbench - Backend API"
+requires-python = ">=3.10"
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true

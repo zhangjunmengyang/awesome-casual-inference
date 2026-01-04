@@ -33,3 +33,22 @@ Thumbs.db
 
 # Local config
 .env.local
+
+# Node.js / pnpm
+node_modules/
+pnpm-lock.yaml
+.pnpm-store/
+
+# Frontend build
+frontend/dist/
+frontend/.vite/
+
+# Backend
+backend/__pycache__/
+backend/*.egg-info/
+
+# Docker
+.docker/
+
+# Claude plans
+.claude/

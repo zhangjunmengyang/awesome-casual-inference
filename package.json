@@ -1,0 +1,15 @@
+{
+  "name": "causal-inference-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm -F frontend dev",
+    "build": "pnpm -F frontend build",
+    "preview": "pnpm -F frontend preview",
+    "lint": "pnpm -F frontend lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
